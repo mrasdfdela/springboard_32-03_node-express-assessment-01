@@ -23,6 +23,24 @@ function readUrls(path) {
         });
       }
     });
+    // Promise.all( urls.map( async (url) => {
+    //   console.log(url);
+    //   return await getHtml(url);
+    // }))
+    //   .then( (html,idx)=>{
+    //     if (html) {
+    //       fileName = hostName(urls[idx]);
+    //       console.log(fileName);
+    //       console.log(idx);
+    //       fs.writeFile(`file${idx}.txt`, html.data, "utf8", (err) => {
+    //         if (err) {
+    //           console.error(err);
+    //           process.exit(1);
+    //         }
+    //         console.log(`Wrote to ${fileName}.txt`);
+    //       });
+    //     }
+    //   });
   });
 }
 
