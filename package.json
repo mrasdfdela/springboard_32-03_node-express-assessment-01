@@ -1,0 +1,23 @@
+{
+  "name": "32-03_node-express-assessment-01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "urls.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrasdfdela/springboard_32-03_node-express-assessment-01.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrasdfdela/springboard_32-03_node-express-assessment-01/issues"
+  },
+  "homepage": "https://github.com/mrasdfdela/springboard_32-03_node-express-assessment-01#readme",
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}
