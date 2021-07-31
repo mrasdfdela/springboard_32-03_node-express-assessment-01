@@ -1,97 +1,39 @@
 const express = require('express');
-const axios = require('axios');
+const ExpressError = require("./expressError");
+const {
+  createDevPromises,
+  createDevResponses,
+  userData
+} = require("./app.helpers.js")
 
 const app = express();
-const ExpressError = require("./expressError");
 app.use(express.json());
-
-app.get("/", function(req,res){
-  return res.send("<h1>Hello world!</h1>")
-});
 
 app.post('/', async function(req, res, next) {
   try {
     const devList = req.body.developers;
-    // devList.forEach( dev => console.log(dev))
-    // console.log(`devList: ${devList}`)
 
-    // let results = devList.map( async (dev) => {
-    //   link = `https://api.github.com/users/${dev}`;
-    //   console.log(link);
-    //   return await axios.get(link)
-    //     .then(res => {
-    //       console.log(`res.data from axios.get: ${res.data}`);
-    //       return res.data;
-    //     })
-    //     .catch( e=>console.error(e) );
-    // });
-    devPromises = createDevPromises(devList);
-
-
-
-
-    // let devPromises = [];
-    // for (let i=0; i<devList.length; i++){
-    //   // console.log(`devList length: ${devList.length}`);
-    //   devPromises.push(
-    //     axios.get(`https://api.github.com/users/${devList[i]}`)
-    //     );
-    //   }
-      
-    // console.log(`devPromises length: ${devPromises.length}`);
-      
-    let devResponses = [];
-    await Promise.all(devPromises)
-      .then( (res) => {
-        // console.log(`res from promise ${res}`)
-        res.forEach( response => {
-          // console.log(response.data);
-          devResponses.push(response);
-        });
-      })
-      .catch(err=>console.log(err));
-
-
-
-    // devPromises = await axios.get(`https://api.github.com/users/${devList[0]}`);
-
-    // console.log(`results: ${devPromises}`);
-    // console.log(`results data: ${devPromises.data}`);
-    // const output = devPromises.map((result) => ({
-    //   name: result.data.name,
-    //   bio: result.data.bio,
-    // }));
-    // console.log(`output: ${output}`)
-
-    const output = await userData(devResponses);
-    console.log(`output: ${output[0]}`)
-    console.log(`output: ${output[1]}`)
-    return res.json(output);
-  } catch {
-    next();
+    const devPromises = createDevPromises(devList);    
+    const devResponses = await createDevResponses(devPromises);
+    if (devResponses) {
+      const output = await userData(devResponses);
+      return res.json(output);
+    } else {
+      throw new ExpressError("unable to fulfill request", 400);
+    }
+  } catch(err) {
+    return next(err);
   }
+});
+
+app.use((err, req, res, next) => {
+  console.log(err);
+  const status = err.status || 404;
+  const msg = err.msg;
+
+  return res.status(status).json({ error: { msg, status } });
 });
 
 app.listen(3000, ()=> {
   console.log("Starting up on port 3000");
 });
-
-function createDevPromises(devList) {
-  let arr = [];
-  for (let i = 0; i < devList.length; i++){
-    link = `https://api.github.com/users/${devList[i]}`;
-    console.log(`link: ${link}`)
-    arr.push(axios.get(link));
-  }
-  return arr;
-}
-
-function userData(responses) {
-  return responses.map( (res)=> {
-    console.log(`userData: ${res}`)
-    return {
-     "bio": res.data.bio,
-     "name": res.data.name
-    }
-  });
-}
