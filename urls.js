@@ -1,46 +1,27 @@
 const axios = require("axios");
 const fs = require("fs");
 
-function readUrls(path) {
-  fs.readFile(path, "utf8", async (err, data) => {
+function downloadHtml(paths) {
+  fs.readFile(paths, "utf8", async (err, data) => {
     if (err) {
       console.log(err);
       process.exit(1);
     }
     const urls = data.toString().split("\n");
+    writeFiles(urls);
+  });
+}
 
-    urls.forEach( async (url) => {
-      html = await getHtml(url);
-      if (html) {
-        fileName = hostName(url);
-        console.log(fileName);
-        fs.writeFile(`file${fileName}.txt`, html.data, "utf8", (err) => {
-          if (err) {
-            console.error(err);
-            process.exit(1);
-          }
-          console.log(`Wrote to ${fileName}.txt`);
-        });
-      }
+async function writeFiles(urls) {
+  Promise.all(
+    urls.map(async (url) => {
+      console.log(url);
+      return await getHtml(url);
+    })
+  ).then((res) => {
+    res.forEach((res, idx) => {
+      writeHtml(urls, res, idx);
     });
-    // Promise.all( urls.map( async (url) => {
-    //   console.log(url);
-    //   return await getHtml(url);
-    // }))
-    //   .then( (html,idx)=>{
-    //     if (html) {
-    //       fileName = hostName(urls[idx]);
-    //       console.log(fileName);
-    //       console.log(idx);
-    //       fs.writeFile(`file${idx}.txt`, html.data, "utf8", (err) => {
-    //         if (err) {
-    //           console.error(err);
-    //           process.exit(1);
-    //         }
-    //         console.log(`Wrote to ${fileName}.txt`);
-    //       });
-    //     }
-    //   });
   });
 }
 
@@ -54,6 +35,20 @@ async function getHtml(url){
   }
 }
 
+function writeHtml(urls, res,idx){
+  if (res) {
+    fileName = hostName(urls[idx]);
+    console.log(fileName);
+    fs.writeFile(`${fileName}.txt`, res.data, "utf8", (err) => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+    });
+    console.log(`Wrote to ${fileName}.txt`);
+  }
+}
+
 function hostName(url){
   noHttp = url.split("//")[1];
   host = noHttp.split("/")[0];
@@ -61,4 +56,4 @@ function hostName(url){
 };
 
 let path = process.argv[2];
-readUrls(path)
+downloadHtml(path);
