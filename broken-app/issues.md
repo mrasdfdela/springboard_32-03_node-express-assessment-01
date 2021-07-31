@@ -4,7 +4,7 @@ No packages installed (express, axios)
 'app' not using JSON -> app.use(express.json()), res.json(output)
 No app.listen() message
 Promises were unhandled--added Promise.all to wait for devList.map data to be returned
-Created helper functions to manage requests, responses, and data manipulation
+Created helper functions & file to manage requests, responses, and data manipulation
 
 Updated iterable for async method
 Created function for async querying to github api

@@ -26,7 +26,7 @@ app.post('/', async function(req, res, next) {
     //     .catch( e=>console.error(e) );
     // });
     devPromises = createDevPromises(devList);
-    
+
 
 
 
@@ -40,8 +40,16 @@ app.post('/', async function(req, res, next) {
       
     // console.log(`devPromises length: ${devPromises.length}`);
       
-    let devResponses = await createDevResponses(devPromises);
-    
+    let devResponses = [];
+    await Promise.all(devPromises)
+      .then( (res) => {
+        // console.log(`res from promise ${res}`)
+        res.forEach( response => {
+          // console.log(response.data);
+          devResponses.push(response);
+        });
+      })
+      .catch(err=>console.log(err));
 
 
 
@@ -75,19 +83,6 @@ function createDevPromises(devList) {
     console.log(`link: ${link}`)
     arr.push(axios.get(link));
   }
-  return arr;
-}
-async function createDevResponses(promises){
-  arr =[];
-  await Promise.all(promises)
-    .then((res) => {
-      // console.log(`res from promise ${res}`)
-      res.forEach((response) => {
-        // console.log(response.data);
-        arr.push(response);
-      });
-    })
-    .catch((err) => console.log(err));
   return arr;
 }
 
